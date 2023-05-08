@@ -1,39 +1,65 @@
 import React, { Component } from 'react';
 import Modal from './Modal/Modal';
 import SearchBar from './Searchbar/Searchbar';
+import PixabaiApi from './Api/PixabaiApi';
+import ImageGallery from './ImageGallery/ImageGallery';
 
 export class App extends Component {
   state = {
-    name : '',
-    showModal : false,
-      }
-      componentDidUpdate(prevProps, prevState){
-          fetch(`https://pixabay.com/api/?q=cat&page=1&key=34776751-542703831e8d0e3da0fedf62a&image_type=photo&orientation=horizontal&per_page=12`)
-          .then(res => res.json())
-          .then(console.log);
-        
-      }
-  handleFormSubmit = name => {
-    this.setState({name});
+    imageName: '',
+    page: 1,
+    hits: [],
+    total: 0,
+    showModal: false,
+  };
+  componentDidUpdate(prevProps, prevState) {
+    if (
+      prevState.imageName !== this.state.imageName ||
+      prevState.page !== this.state.page
+    ) {
+      this.fetchImageName();
+    }
   }
-  
+
+  fetchImageName = () => {
+    const { imageName, page } = this.state;
+    PixabaiApi(imageName, page).then(res => {
+      if (res.total === 0 && res.hits.length === 0) {
+        alert(`${imageName}сорян`);
+      }
+      console.log(res);
+      this.setState(prevState => ({
+        hits: [...prevState.hits, ...res.hits], 
+        total: res.total,
+      }))
+    });
+  };
+
+  handleFormSubmit = searchName => {
+    this.setState({
+      hits: [], 
+      page: 1,
+      imageName: searchName,
+    })
+  };
 
   toggleModal = () => {
     this.setState(({ showModal }) => ({
-      showModal : !showModal,
+      showModal: !showModal,
     }));
   };
 
- render() {
-  const {showModal} = this.state;
-  return (
-    
-    <div>
-      <SearchBar onSubmit={this.handleFormSubmit}/>
-      <button type="button" onClick={this.toggleModal}>Відкрити модалку</button>
-       {showModal && 
-       <Modal onClose = {this.toggleModal}/>}
-    </div>
-  );
- }
-};
+  render() {
+    const { hits, total, page, showModal } = this.state;
+    return (
+      <div>
+        <SearchBar onSubmit={this.handleFormSubmit}  />
+        {hits.length > 0 && <ImageGallery hits = {hits}/>}
+        <button type="button" onClick={this.toggleModal}>
+          Відкрити модалку
+        </button>
+        {showModal && <Modal onClose={this.toggleModal} />}
+      </div>
+    );
+  }
+}

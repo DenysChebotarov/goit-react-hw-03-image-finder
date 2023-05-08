@@ -2,19 +2,19 @@ import React, { Component } from 'react';
 
 export default class SearchBar extends Component {
   state = {
-    name: '',
+    imageName: '',
   };
   handleNameChange = event => {
-    this.setState({ name: event.currentTarget.value.toLowerCase() });
+    this.setState({ imageName: event.currentTarget.value.toLowerCase() });
   };
   handleSubmit = event => {
     event.preventDefault();
-    if (this.state.name.trim() === '') {
+    if (this.state.imageName.trim() === '') {
       alert('Введіть імя');
       return;
     }
-    this.props.onSubmit(this.state.name);
-    this.setState({ name: '' });
+    this.props.onSubmit(this.state.imageName);
+    this.setState({ imageName: '' });
   };
   render() {
     return (
@@ -28,10 +28,10 @@ export default class SearchBar extends Component {
             class="input"
             type="text"
             name="name"
-            value={this.state.name}
+            value={this.state.imageName}
             onChange={this.handleNameChange}
-            autocomplete="off"
-            autofocus
+            // autocomplete="off"
+            // autofocus
             placeholder="Search images and photos"
           />
         </form>
