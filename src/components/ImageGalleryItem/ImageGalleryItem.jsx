@@ -1,7 +1,8 @@
+import css from './ImageGalleryItem.module.css'
 export default function ImageGalleryItem({webformatURL, largeImageURL}) {
   return (
-    <li class="gallery-item">
-  <img src={webformatURL} alt="" />
+    <li className={css.imageGalleryItem}>
+  <img className={css.imageGalleryItem_image} src={webformatURL} alt="" />
 </li>
   )
 }

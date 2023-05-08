@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import Modal from './Modal/Modal';
-import SearchBar from './Searchbar/Searchbar';
 import PixabaiApi from './Api/PixabaiApi';
+import  {  ToastContainer ,  toast  }  from  'react-toastify' ; 
+import SearchBar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
+import Modal from './Modal/Modal';
 
 export class App extends Component {
   state = {
@@ -25,7 +26,7 @@ export class App extends Component {
     const { imageName, page } = this.state;
     PixabaiApi(imageName, page).then(res => {
       if (res.total === 0 && res.hits.length === 0) {
-        alert(`${imageName}сорян`);
+        toast(`${imageName}сорян`);
       }
       console.log(res);
       this.setState(prevState => ({
@@ -59,6 +60,7 @@ export class App extends Component {
           Відкрити модалку
         </button>
         {showModal && <Modal onClose={this.toggleModal} />}
+        <ToastContainer /> 
       </div>
     );
   }
