@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-import PixabaiApi from './Api/PixabaiApi';
-import  {  ToastContainer ,  toast  }  from  'react-toastify' ; 
+import PixabaiApi from './Api/PixabaiApi'; 
 import SearchBar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
+import Button from './Button/Button';
+import Loader from './Loader/Loader';
 import Modal from './Modal/Modal';
 
 export class App extends Component {
@@ -11,6 +12,8 @@ export class App extends Component {
     page: 1,
     hits: [],
     total: 0,
+    loading: false,
+    largeImageURL: '',
     showModal: false,
   };
   componentDidUpdate(prevProps, prevState) {
@@ -24,14 +27,16 @@ export class App extends Component {
 
   fetchImageName = () => {
     const { imageName, page } = this.state;
+    this.setState({loading: true})
     PixabaiApi(imageName, page).then(res => {
       if (res.total === 0 && res.hits.length === 0) {
-        toast(`${imageName}сорян`);
+        alert(`${imageName}сорян`);
       }
       console.log(res);
       this.setState(prevState => ({
         hits: [...prevState.hits, ...res.hits], 
         total: res.total,
+        loading: false,
       }))
     });
   };
@@ -44,23 +49,35 @@ export class App extends Component {
     })
   };
 
+loadmoreClick = () =>{
+this.setState(prevState=>
+  ({page : prevState.page+1}))
+}
+
   toggleModal = () => {
     this.setState(({ showModal }) => ({
       showModal: !showModal,
     }));
   };
 
+  clickImage = (largeImageURL) => {
+this.setState({largeImageURL, showModal: true})
+  }
+
   render() {
-    const { hits, total, page, showModal } = this.state;
+    const { hits, total, page, showModal, loading, largeImageURL } = this.state;
+    const loadMore = total>page*12 && loading 
+    ? (<Loader/>) 
+    : (total>page*12 && (<Button loadmoreClick = {this.loadmoreClick} text = {'Load more'}/>))
+
+    console.log(total);
     return (
       <div>
         <SearchBar onSubmit={this.handleFormSubmit}  />
-        {hits.length > 0 && <ImageGallery hits = {hits}/>}
-        <button type="button" onClick={this.toggleModal}>
-          Відкрити модалку
-        </button>
-        {showModal && <Modal onClose={this.toggleModal} />}
-        <ToastContainer /> 
+        {hits.length > 0 && <ImageGallery clickImage = {this.clickImage} hits = {hits}/>}
+        {loadMore}
+        {showModal && <Modal largeImageURL = {largeImageURL} onClose={this.toggleModal} />}
+   
       </div>
     );
   }

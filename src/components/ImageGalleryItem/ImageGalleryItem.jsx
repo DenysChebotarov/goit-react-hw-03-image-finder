@@ -1,7 +1,7 @@
 import css from './ImageGalleryItem.module.css'
-export default function ImageGalleryItem({webformatURL, largeImageURL}) {
+export default function ImageGalleryItem({webformatURL, largeImageURL, clickImage}) {
   return (
-    <li className={css.imageGalleryItem}>
+    <li onClick={()=>clickImage(largeImageURL)} className={css.imageGalleryItem}>
   <img className={css.imageGalleryItem_image} src={webformatURL} alt="" />
 </li>
   )
