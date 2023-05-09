@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import PixabaiApi from './Api/PixabaiApi'; 
+import Notiflix from 'notiflix';
+import PixabaiApi from './Api/PixabaiApi';
 import SearchBar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
@@ -27,32 +28,30 @@ export class App extends Component {
 
   fetchImageName = () => {
     const { imageName, page } = this.state;
-    this.setState({loading: true})
+    this.setState({ loading: true });
     PixabaiApi(imageName, page).then(res => {
       if (res.total === 0 && res.hits.length === 0) {
-        alert(`${imageName}сорян`);
+        Notiflix.Notify.failure(`${imageName} does not exist`);
       }
-      console.log(res);
       this.setState(prevState => ({
-        hits: [...prevState.hits, ...res.hits], 
+        hits: [...prevState.hits, ...res.hits],
         total: res.total,
         loading: false,
-      }))
+      }));
     });
   };
 
   handleFormSubmit = searchName => {
     this.setState({
-      hits: [], 
+      hits: [],
       page: 1,
       imageName: searchName,
-    })
+    });
   };
 
-loadmoreClick = () =>{
-this.setState(prevState=>
-  ({page : prevState.page+1}))
-}
+  loadmoreClick = () => {
+    this.setState(prevState => ({ page: prevState.page + 1 }));
+  };
 
   toggleModal = () => {
     this.setState(({ showModal }) => ({
@@ -60,24 +59,31 @@ this.setState(prevState=>
     }));
   };
 
-  clickImage = (largeImageURL) => {
-this.setState({largeImageURL, showModal: true})
-  }
+  clickImage = largeImageURL => {
+    this.setState({ largeImageURL, showModal: true });
+  };
 
   render() {
     const { hits, total, page, showModal, loading, largeImageURL } = this.state;
-    const loadMore = total>page*12 && loading 
-    ? (<Loader/>) 
-    : (total>page*12 && (<Button loadmoreClick = {this.loadmoreClick} text = {'Load more'}/>))
+    const loadMore =
+      total > page * 12 && loading ? (
+        <Loader />
+      ) : (
+        total > page * 12 && (
+          <Button loadmoreClick={this.loadmoreClick} text={'Load more'} />
+        )
+      );
 
-    console.log(total);
     return (
       <div>
-        <SearchBar onSubmit={this.handleFormSubmit}  />
-        {hits.length > 0 && <ImageGallery clickImage = {this.clickImage} hits = {hits}/>}
+        <SearchBar onSubmit={this.handleFormSubmit} />
+        {hits.length > 0 && (
+          <ImageGallery clickImage={this.clickImage} hits={hits} />
+        )}
         {loadMore}
-        {showModal && <Modal largeImageURL = {largeImageURL} onClose={this.toggleModal} />}
-   
+        {showModal && (
+          <Modal largeImageURL={largeImageURL} onClose={this.toggleModal} />
+        )}
       </div>
     );
   }

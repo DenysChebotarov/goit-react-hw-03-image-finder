@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import css from './Searchbar.module.css'
-import { BsSearch } from "react-icons/bs";
+import PropTypes from 'prop-types';
+import css from './Searchbar.module.css';
+import { BsSearch } from 'react-icons/bs';
+import Notiflix from 'notiflix';
 
 export default class SearchBar extends Component {
   state = {
@@ -12,7 +14,7 @@ export default class SearchBar extends Component {
   handleSubmit = event => {
     event.preventDefault();
     if (this.state.imageName.trim() === '') {
-      alert('Введіть імя');
+      Notiflix.Notify.failure('You have not entered anything');
       return;
     }
     this.props.onSubmit(this.state.imageName);
@@ -20,11 +22,10 @@ export default class SearchBar extends Component {
   };
   render() {
     return (
-      <header className= {css.searchbar}>
+      <header className={css.searchbar}>
         <form onSubmit={this.handleSubmit} className={css.searchForm}>
           <button type="submit" className={css.searchForm_button}>
-            <BsSearch/>
-            {/* <span className={css.searchForm_button_label}>Search</span> */}
+            <BsSearch />
           </button>
 
           <input
@@ -33,12 +34,13 @@ export default class SearchBar extends Component {
             name="name"
             value={this.state.imageName}
             onChange={this.handleNameChange}
-            // autocomplete="off"
-            // autofocus
             placeholder="Search images and photos"
           />
         </form>
       </header>
     );
   }
+}
+SearchBar.propTypes ={
+  onSubmit : PropTypes.func.isRequired
 }
